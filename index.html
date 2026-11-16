@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SF EVENTS — We Create. You Celebrate.</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+<style>
+:root{--k:#070707;--g:#D6B36A;--lg:#F2D99B;--c:#171717;--p:#F7F4ED;--rz:380px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--k);color:var(--p);font:300 16px/1.7 Montserrat,system-ui,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased;letter-spacing:.01em}
+body.lock{overflow:hidden}
+canvas#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-height:1.05}
+h2{font-size:clamp(2rem,5vw,3.8rem);color:var(--lg)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--lg);outline-offset:3px}
+main{position:relative;z-index:2}
+section{min-height:100vh;padding:110px 6vw 70px;position:relative}
+.eyebrow{letter-spacing:.35em;font-size:.72rem;color:var(--g);text-transform:uppercase;margin-bottom:14px}
+.btn{display:inline-block;border:1px solid var(--g);background:linear-gradient(135deg,var(--g),var(--lg));color:#111;padding:14px 30px;letter-spacing:.2em;font:500 .78rem Montserrat;text-transform:uppercase;cursor:pointer;text-decoration:none;border-radius:2px}
+.btn.o{background:transparent;color:var(--lg)}
+.btn:hover{filter:brightness(1.12)}
+nav{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:16px 6vw;background:linear-gradient(#070707cc,transparent)}
+nav b{font:600 1.2rem 'Cormorant Garamond';letter-spacing:.3em;color:var(--lg)}
+nav ul{display:flex;gap:26px;list-style:none;padding:0}
+nav a{text-decoration:none;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase}
+nav a:hover{color:var(--lg)}
+#mb{display:none;background:none;border:1px solid var(--g);color:var(--lg);padding:8px 14px;font:inherit}
+#intro{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding:0 6vw 11vh;pointer-events:none}
+#intro>*{pointer-events:auto}
+#intro h1{font-size:clamp(2.4rem,8vw,6rem);letter-spacing:.18em;color:var(--lg);opacity:0}
+#intro p{letter-spacing:.4em;font-size:.78rem;color:var(--g);margin:6px 0 24px;opacity:0}
+#intro .btn{opacity:0}
+#skip{position:fixed;top:calc(18px + env(safe-area-inset-top,0px));right:5vw;z-index:51;background:none;border:1px solid #D6B36A66;color:var(--p);padding:8px 16px;font:inherit;font-size:.7rem;letter-spacing:.2em;cursor:pointer}
+#hero{display:flex;flex-direction:column;justify-content:center;max-width:1100px}
+#hero h1{font-size:clamp(2.4rem,7vw,6rem);color:var(--p)}
+#hero h1 em{color:var(--lg);font-style:normal}
+#hero p{max-width:520px;margin:22px 0 30px;color:#d9d3c5}
+.panel{background:#070707d9;border:1px solid #D6B36A33;backdrop-filter:blur(8px);border-radius:6px}
+/* worlds */
+#stage{perspective:1400px;height:440px;margin:30px auto 10px;position:relative;touch-action:pan-y}
+#ring{position:absolute;inset:0;margin:auto;width:190px;height:330px;transform-style:preserve-3d}
+.pt{position:absolute;inset:0;border:1px solid var(--g);border-radius:999px 999px 6px 6px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:20px 10px;text-align:center;cursor:pointer;color:var(--p);font:inherit;box-shadow:0 0 40px #D6B36A22 inset;backface-visibility:hidden}
+.pt b{font:600 3.4rem 'Cormorant Garamond';color:var(--lg);opacity:.85}
+.pt span{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase}
+.pt[aria-pressed=true]{box-shadow:0 0 60px #F2D99B66,0 0 40px #D6B36A44 inset;border-color:var(--lg)}
+#wi{max-width:720px;margin:0 auto;padding:26px;text-align:center}
+#wi h3{font-size:2.2rem;color:var(--lg)}
+.ctl{display:flex;justify-content:center;gap:12px;margin:14px 0}
+/* venue */
+#vwrap{position:relative;height:min(62vh,560px);border:1px solid #D6B36A44;border-radius:6px;overflow:hidden;margin-top:22px;touch-action:pan-y}
+#vc,#bc{width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}#vc:focus-visible,#bc:focus-visible{outline-offset:-4px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.chip{border:1px solid #D6B36A88;background:#0a0a0acc;color:var(--p);padding:10px 18px;font:500 .72rem Montserrat;letter-spacing:.18em;cursor:pointer;border-radius:30px}
+.chip[aria-pressed=true],.chip.on{background:var(--g);color:#111}
+/* portfolio */
+#strip{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;padding:26px 0 18px;margin:0 -6vw;padding-inline:6vw;-webkit-overflow-scrolling:touch}
+.fr{flex:0 0 min(78vw,520px);height:min(62vh,460px);scroll-snap-align:center;border:1px solid #D6B36A44;border-radius:4px;position:relative;overflow:hidden;cursor:pointer;background:var(--c)}
+.fr i,.gp i{position:absolute;inset:-8%;background-size:cover;background-position:center;transition:transform .5s}
+.fr:hover i{transform:scale(1.06)}
+.fr .cap,.gp .cap{position:absolute;left:0;right:0;bottom:0;padding:18px;background:linear-gradient(transparent,#000d);font:600 1.6rem 'Cormorant Garamond'}
+.demo{position:absolute;top:10px;left:10px;font-size:.58rem;letter-spacing:.2em;background:#000a;color:var(--lg);padding:3px 8px;border:1px solid #D6B36A55;z-index:2}
+#gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:22px;perspective:1000px;margin-top:10px}
+.gp{height:290px;position:relative;border:1px solid #F7F4ED33;border-radius:10px;overflow:hidden;cursor:pointer;background:#ffffff0d;backdrop-filter:blur(6px);transition:transform .15s,box-shadow .3s;transform-style:preserve-3d;box-shadow:0 20px 50px #000a;padding:0;color:var(--p);text-align:left;font:inherit}
+.gp:hover{box-shadow:0 0 40px #D6B36A55}
+/* machine */
+form#m{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;padding:30px;margin-top:24px}
+label,.lb{display:block;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--g);margin-bottom:8px}
+input[type=text],input[type=date],select{width:100%;background:#111;border:1px solid #D6B36A55;color:var(--p);padding:12px;font:inherit;border-radius:2px;color-scheme:dark}
+input[type=range]{width:100%;accent-color:var(--g)}
+#sum{margin-top:24px;padding:30px;display:none}
+#sum pre{white-space:pre-wrap;font:inherit;color:var(--p);margin:14px 0 22px;line-height:1.9}
+.full{grid-column:1/-1}
+/* contact */
+#contact{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding-bottom:10vh}
+#contact h2{color:var(--p);text-shadow:0 0 30px #000}
+#contact .lk{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:22px 0}
+#contact p{color:#e5dfd0}
+footer{position:relative;z-index:2;text-align:center;padding:30px;font-size:.7rem;letter-spacing:.3em;color:var(--g);background:#070707}
+#lb{position:fixed;inset:0;z-index:60;background:#000e;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:5vw}
+#lb.on{display:flex}
+#lbi{width:min(92vw,900px);height:min(70vh,600px);border:1px solid var(--g);background-size:cover;background-position:center}
+.cur{position:fixed;left:0;top:0;width:34px;height:34px;margin:-17px;border:1px solid var(--lg);border-radius:50%;pointer-events:none;z-index:100;mix-blend-mode:difference}
+.rv{opacity:0;transform:translateY(40px)}
+body::after{content:'';position:fixed;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,#000b 100%)}
+section:not(#hero):not(#contact){background:linear-gradient(180deg,#070707f0,#070707b8 45%,#070707f0)}
+h2{position:relative;padding-bottom:20px;margin-bottom:8px;font-weight:500;background:linear-gradient(100deg,#F7F4ED,#F2D99B 45%,#D6B36A);-webkit-background-clip:text;background-clip:text;color:transparent}
+h2:after{content:'';position:absolute;left:0;bottom:0;width:80px;height:1px;background:linear-gradient(90deg,var(--g),transparent)}
+#contact h2{color:transparent;text-shadow:none}#contact h2:after{left:50%;transform:translateX(-50%)}
+.eyebrow:before{content:'';display:inline-block;width:34px;height:1px;background:var(--g);vertical-align:middle;margin-right:14px}
+.btn{transition:all .3s;font-weight:500}.btn:hover{transform:translateY(-2px);box-shadow:0 12px 34px #D6B36A44;filter:none}.btn.o:hover{background:#D6B36A22}
+.chip{transition:all .25s}.chip:hover{border-color:var(--lg);color:var(--lg)}.chip[aria-pressed=true]:hover,.chip.on:hover{color:#111}
+.panel{background:linear-gradient(160deg,#181818f2,#070707f2);border-color:#D6B36A44;box-shadow:0 30px 80px #000a,inset 0 1px 0 #F2D99B22}
+nav{background:#070707b8;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid #D6B36A22}
+nav b{background:linear-gradient(90deg,#F2D99B,#D6B36A);-webkit-background-clip:text;background-clip:text;color:transparent}
+nav a.nc{border:1px solid var(--g);padding:9px 18px;color:var(--lg);transition:all .3s}nav a.nc:hover{background:var(--g);color:#111}
+#hero:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#070707d9,transparent 72%);z-index:-1}
+#hero h1{font-weight:500;letter-spacing:-.01em;text-shadow:0 4px 40px #000}
+#hero h1 em{background:linear-gradient(100deg,#F2D99B,#D6B36A 55%,#F2D99B);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cue{position:absolute;left:6vw;bottom:30px;font-size:.6rem;letter-spacing:.4em;color:var(--g);display:flex;align-items:center;gap:14px}
+.cue:after{content:'';width:60px;height:1px;background:linear-gradient(90deg,var(--g),transparent)}
+.mq{overflow:hidden;white-space:nowrap;border-block:1px solid #D6B36A44;background:#070707ee;padding:18px 0;position:relative}
+.mq div{display:inline-block;font:500 1.35rem 'Cormorant Garamond',serif;letter-spacing:.35em;color:var(--g);animation:mq 40s linear infinite}
+@keyframes mq{to{transform:translateX(-50%)}}
+.gp:after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,#fff0 30%,#ffffff22 50%,#fff0 70%);pointer-events:none}
+.fr{box-shadow:0 30px 70px #000b}
+footer{border-top:1px solid #D6B36A33}
+@media(prefers-reduced-motion:reduce){.mq div{animation:none}}
+@media(max-width:760px){:root{--rz:230px}.mq div{font-size:1rem}nav a.nc{display:inline-block}nav ul{display:none;position:fixed;inset:64px 0 auto;flex-direction:column;background:#070707f2;padding:20px 6vw}nav ul.on{display:flex}#mb{display:block}#ring{width:150px;height:270px}#stage{height:380px}}
+@media(hover:none){.cur{display:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.rv{opacity:1;transform:none}}
+#skipl{position:fixed;left:-999px;top:8px;z-index:200;background:var(--g);color:#111;padding:10px 16px}#skipl:focus{left:8px}
+#fl{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 45%,#F2D99B66,transparent 62%)}
+#bld{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:22px;margin-top:22px;align-items:start}
+#bwrap{position:relative;height:min(70vh,600px);border:1px solid #D6B36A44;border-radius:6px;overflow:hidden;background:#050403}
+#bctl{padding:22px}#bctl .chips{margin:8px 0 16px}#bctl .chip{padding:8px 14px;font-size:.66rem}
+#bsum{margin-top:16px;padding:20px;text-align:center}#bsum p{color:var(--lg)}
+.fr:focus-visible,.gp:focus-visible{outline-offset:-6px}
+@media(max-width:980px){nav ul{display:none;position:fixed;inset:64px 0 auto;flex-direction:column;background:#070707f2;padding:20px 6vw}nav ul.on{display:flex}#mb{display:block}}
+@media(max-width:900px){#bld{grid-template-columns:1fr}#bwrap{height:56vh}}
+@media(max-width:480px){section{padding:96px 5vw 60px}.btn{padding:12px 20px}.chip{padding:9px 13px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}#fl{display:none}}
+</style></head>
+<body class="lock"><a id="skipl" href="#main">Skip to content</a><div id="fl" aria-hidden="true"></div>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="cur" id="cur" aria-hidden="true"></div>
+<nav aria-label="Main"><b>SF EVENTS</b><button id="mb" aria-label="Menu" aria-expanded="false">MENU</button>
+<ul id="nl"><li><a href="#hero">Home</a></li><li><a href="#worlds">Worlds</a></li><li><a href="#venue">Venue</a></li><li><a href="#builder">Builder</a></li><li><a href="#portfolio">Portfolio</a></li><li><a href="#plan">Plan</a></li><li><a href="#gallery">Gallery</a></li><li><a href="#contact">Contact</a></li><li><a class="nc" href="#plan">Plan Event</a></li></ul></nav>
+<button id="skip">SKIP INTRO</button>
+<div id="intro"><h1>SF EVENTS</h1><p>WE CREATE. YOU CELEBRATE.</p><button class="btn" id="enter">Enter Experience</button></div>
+
+<main id="main" tabindex="-1">
+<section id="hero"><div class="eyebrow">SF EVENTS · Premium Event Management</div>
+<h1>WE DON'T DECORATE MOMENTS.<br><em>WE DESIGN EXPERIENCES.</em></h1>
+<p>Every celebration begins with an imagination. We turn it into something unforgettable.</p>
+<div><a class="btn" href="#worlds">Explore the Experience</a></div><div class="cue" aria-hidden="true">SCROLL</div></section>
+<div class="mq" aria-hidden="true"><div>WEDDINGS ✦ DECOR ✦ CINEMATOGRAPHY ✦ CELEBRATIONS ✦ CORPORATE EVENTS ✦ CATERING &amp; PRODUCTION ✦ WEDDINGS ✦ DECOR ✦ CINEMATOGRAPHY ✦ CELEBRATIONS ✦ CORPORATE EVENTS ✦ CATERING &amp; PRODUCTION ✦ </div></div>
+
+<section id="worlds"><div class="eyebrow rv">Six Worlds</div><h2 class="rv">The Six Worlds of SF EVENTS</h2>
+<div id="stage"><div id="ring" role="group" aria-label="Six worlds"></div></div>
+<div class="ctl"><button class="chip" id="pv" aria-label="Previous world">‹ PREV</button><button class="chip" id="nx" aria-label="Next world">NEXT ›</button></div>
+<div id="wi" class="panel" aria-live="polite"></div></section>
+
+<section id="venue"><div class="eyebrow rv">Signature Feature</div><h2 class="rv">The Dream Venue Simulator</h2>
+<p class="rv" style="max-width:600px;margin-top:10px">A miniature virtual ballroom. Drag to orbit, scroll the wheel to zoom (the page scrolls again at the zoom limits), pinch on touch, or focus the 3D view and use arrow keys and + / −.</p>
+<div class="chips" id="pre" role="group" aria-label="Atmosphere presets"></div>
+<div id="vwrap"><canvas id="vc" tabindex="0" role="img" aria-label="Interactive 3D ballroom. Arrow keys rotate, plus and minus zoom, zero resets."></canvas></div>
+<div class="ctl"><button class="chip" id="zi">ZOOM +</button><button class="chip" id="zo">ZOOM −</button><button class="chip" id="rs">RESET VIEW</button></div></section>
+
+<section id="builder"><div class="eyebrow rv">Co-create With Us</div><h2 class="rv">SF DREAM BUILDER</h2>
+<p class="rv" style="max-width:640px;margin-top:10px">Choose a stage, florals, lighting and atmosphere and watch your celebration update live in 3D. Then send the design straight to SF EVENTS.</p>
+<div id="bld"><div id="bwrap"><canvas id="bc" tabindex="0" role="img" aria-label="Live 3D preview of your wedding stage. Arrow keys rotate, plus and minus zoom."></canvas></div>
+<div id="bctl" class="panel"></div></div>
+<div class="ctl"><button class="chip" id="bzi">ZOOM +</button><button class="chip" id="bzo">ZOOM −</button><button class="chip" id="brs">RESET VIEW</button></div>
+<div id="bsum" class="panel"><p id="bst" role="status"></p><div class="ctl"><a class="btn" id="bwa" target="_blank" rel="noopener">Send design via WhatsApp</a><a class="btn o" id="buse" href="#plan">Add to my event enquiry</a></div></div></section>
+
+<section id="portfolio"><div class="eyebrow rv">Cinematic Archive</div><h2 class="rv">The Story Portfolio</h2>
+<p class="rv" style="max-width:640px;margin-top:10px">Swipe or scroll sideways. These are real event-photo references for visual inspiration, not a claim that SF EVENTS produced these events.</p>
+<div id="strip" role="region" aria-label="Portfolio categories"></div></section>
+
+<section id="plan"><div class="eyebrow rv">Event Creation Machine</div><h2 class="rv">IMAGINE IT. DESIGN IT. CELEBRATE IT.</h2>
+<form id="m" class="panel" autocomplete="off">
+<div><label for="f1">1 · Event category</label><select id="f1" required><option value="">Choose…</option><option>Wedding</option><option>Engagement</option><option>Birthday</option><option>Corporate Event</option><option>Private Celebration</option><option>Other</option></select></div>
+<div><label for="f2">2 · Preferred date</label><input type="date" id="f2"></div>
+<div><label for="f3">3 · Venue location</label><input type="text" id="f3" placeholder="City / venue"></div>
+<div><label for="f4">4 · Guest count: <span id="gv">150</span></label><input type="range" id="f4" min="20" max="2000" step="10" value="150"></div>
+<div class="full"><span class="lb">5 · Decoration style</span><div class="chips" id="f5"></div></div>
+<div class="full"><span class="lb">6 · Photography requirements</span><div class="chips" id="f6"></div></div>
+<div><label for="f7">7 · Catering</label><select id="f7"><option>Not required</option><option>Vegetarian</option><option>Non-vegetarian</option><option>Veg &amp; Non-veg</option><option>Live counters</option></select></div>
+<div><label for="f8">8 · Estimated budget</label><select id="f8"><option>Not decided</option><option>Under ₹1 lakh</option><option>₹1–3 lakh</option><option>₹3–7 lakh</option><option>₹7–15 lakh</option><option>₹15 lakh+</option></select></div>
+<div class="full"><button class="btn" type="submit">Generate Event Summary</button></div></form>
+<div id="sum" class="panel" aria-live="polite"><h3 class="serif" style="font-size:2rem;color:var(--lg)">Your Event Blueprint</h3><pre id="st"></pre><a class="btn" id="wa" target="_blank" rel="noopener">Send via WhatsApp</a></div></section>
+
+<section id="gallery"><div class="eyebrow rv">Infinite Golden Gallery</div><h2 class="rv">Floating Glass Panels</h2>
+<p class="rv" style="max-width:600px;margin:10px 0">Explore real wedding, birthday and event photography references. These are inspiration images, not completed SF EVENTS projects.</p>
+<div class="chips" id="gf"></div><div id="gal"></div></section>
+
+<section id="contact"><div class="eyebrow">The Signature Dimension</div><h2>LET'S CREATE SOMETHING UNFORGETTABLE.</h2>
+<div class="lk"><a class="btn" href="https://wa.me/918978679524" target="_blank" rel="noopener">WhatsApp</a><a class="btn o" href="mailto:faisaltmd2006@gmail.com">Email</a><a class="btn o" href="https://www.instagram.com/faisal._.2006__/" target="_blank" rel="noopener">Instagram</a><a class="btn o" href="#plan">Event Enquiry</a></div>
+<p>Phone: <a href="tel:+918978679524">8978679524</a> · <a href="mailto:faisaltmd2006@gmail.com">faisaltmd2006@gmail.com</a> · Instagram: faisal._.2006__</p></section>
+</main>
+<footer>SF EVENTS · WE CREATE. YOU CELEBRATE.<br>EVERY CELEBRATION DESERVES A MASTERPIECE.</footer>
+<div id="lb" role="dialog" aria-modal="true" aria-label="Preview"><div id="lbi"></div><div class="serif" id="lbt" style="font-size:1.6rem"></div><div class="ctl"><button class="chip" id="lp">‹ PREV</button><button class="chip" id="lc">CLOSE ✕</button><button class="chip" id="ln">NEXT ›</button></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),mob=innerWidth<760;let RM=matchMedia('(prefers-reduced-motion:reduce)').matches;matchMedia('(prefers-reduced-motion:reduce)').addEventListener('change',e=>RM=e.matches);let DREAM='';
+const GOLD=0xD6B36A,LG=0xF2D99B;
+/* ===== EDIT ME: replace with real project photos: {cat,title,src:'https://...'} ===== */
+const CATS=['Weddings','Engagements','Birthdays','Corporate','Decorations','Photography','Reels'];
+const IMG=[
+ {cat:'Weddings',title:'Lakeside Wedding Mandap',src:'assets/wedding-lakeside-mandap.jpg'},
+ {cat:'Weddings',title:'Ivory Floral Wedding Canopy',src:'assets/wedding-ivory-floral-canopy.jpg'},
+ {cat:'Engagements',title:'Ivory & Green Engagement Stage',src:'assets/engagement-ivory-green-stage.jpg'},
+ {cat:'Engagements',title:'Floral Engagement Celebration',src:'assets/engagement-floral-stage.jpg'},
+ {cat:'Birthdays',title:'Pink & Gold Birthday Stage',src:'assets/birthday-pink-gold-stage.jpg'},
+ {cat:'Birthdays',title:'Sage Green Birthday Decor',src:'assets/birthday-sage-green-stage.jpg'},
+ {cat:'Corporate',title:'Blue Corporate Gala Banquet',src:'assets/corporate-banquet-blue-stage.jpg'},
+ {cat:'Corporate',title:'Purple Corporate Event Setup',src:'assets/corporate-purple-banquet.jpg'},
+ {cat:'Decorations',title:'Royal Floral Wedding Mandap',src:'assets/wedding-royal-floral-mandap.jpg'},
+ {cat:'Decorations',title:'Garden Floral Stage Design',src:'assets/wedding-garden-floral-stage.jpg'},
+ {cat:'Decorations',title:'Golden Reception Stage',src:'assets/wedding-golden-reception-stage.jpg'},
+ {cat:'Photography',title:'Wedding Couple Stage Moment',src:'assets/wedding-couple-stage.jpg'},
+ {cat:'Photography',title:'Wedding Decor Inspiration Collage',src:'assets/wedding-garden-collage-reference.jpg'},
+ {cat:'Reels',title:'Wedding Floral Walkway',src:'assets/wedding-engagement-walkway.jpg'},
+ {cat:'Reels',title:'Outdoor Birthday Celebration',src:'assets/birthday-outdoor-sage-stage.jpg'},
+ {cat:'Reels',title:'Floral Garden Birthday Setup',src:'assets/birthday-floral-green-stage.jpg'},
+ {cat:'Corporate',title:'Blue Conference Stage',src:'assets/corporate-blue-conference.jpg'}
+].map((o,i)=>({...o,h:(i*47+20)%360}));
+/* ===== PHOTO SLOTS: give any IMG entry a real photo with src:'photos/wedding1.jpg' (mark as inspiration until real SF EVENTS projects are supplied) ===== */
+const PH={},PL=[['#2a1a08','#D6B36A'],['#2a0d1a','#ff9ec0'],['#2b1a0a','#ffc477'],['#25120a','#ffb27a'],['#1a1a14','#f3e3b5'],['#101018','#cbd5e8'],['#150f1f','#c9a7ff']];
+function demoPhoto(o){const k=o.cat+o.title;if(PH[k])return PH[k];const W=360,H=450,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),[bg,ac]=PL[CATS.indexOf(o.cat)%7];let s=o.h*977+13;const r=()=>(s=s*16807%2147483647)/2147483647;
+ let g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#050403');g.addColorStop(.55,bg);g.addColorStop(1,'#0b0907');x.fillStyle=g;x.fillRect(0,0,W,H);
+ const blob=(px,py,rad,col,a)=>{g=x.createRadialGradient(px,py,0,px,py,rad);g.addColorStop(0,col+a);g.addColorStop(.7,col+'22');g.addColorStop(1,col+'00');x.fillStyle=g;x.beginPath();x.arc(px,py,rad,0,6.283);x.fill()};
+ x.globalCompositeOperation='lighter';for(let i=0;i<46;i++)blob(r()*W,r()*H*.65,8+r()*36,ac,'66');
+ x.strokeStyle=ac+'99';x.lineWidth=4;x.beginPath();x.arc(W/2,H*.64,W*.31,Math.PI,0);x.stroke();x.beginPath();x.arc(W/2,H*.64,W*.26,Math.PI,0);x.stroke();
+ x.globalCompositeOperation='source-over';const fc=['#f2a1b5','#faf6ee','#e6dac0','#ffd9e1'];
+ for(let i=0;i<170;i++){const t=r()*Math.PI,side=r()<.7,px=side?W/2-Math.cos(t)*W*.3+(r()-.5)*24:r()*W,py=side?H*.64-Math.sin(t)*W*.3+(r()-.5)*24:H*.78+r()*H*.2;blob(px,py,7+r()*13,fc[(r()*4)|0],'cc')}
+ g=x.createLinearGradient(0,H*.8,0,H);g.addColorStop(0,'#0000');g.addColorStop(1,'#000c');x.fillStyle=g;x.fillRect(0,H*.8,W,H*.2);
+ g=x.createRadialGradient(W/2,H/2,H*.3,W/2,H/2,H*.75);g.addColorStop(0,'#0000');g.addColorStop(1,'#000b');x.fillStyle=g;x.fillRect(0,0,W,H);
+ for(let i=0;i<900;i++){x.fillStyle=`rgba(255,255,255,${r()*.05})`;x.fillRect(r()*W,r()*H,1.2,1.2)}
+ return PH[k]=c.toDataURL('image/jpeg',.82)}
+const bgOf=o=>o.src?`url(${o.src})`:`url(${demoPhoto(o)})`;
+function mkEnv(r){const s=new THREE.Scene();s.background=new THREE.Color(0x050403);const bx=(w,h,px,py,pz,c,i)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:new THREE.Color(c).multiplyScalar(i),side:2}));m.position.set(px,py,pz);m.lookAt(0,0,0);s.add(m)};
+ bx(14,6,0,10,0,0xfff0d0,6);bx(6,14,-12,2,4,0xffd9a0,4);bx(6,14,12,2,-4,0xffffff,3);bx(20,3,0,-3,-12,0xD6B36A,2);bx(8,8,0,3,14,0xffe8c0,3);
+ const p=new THREE.PMREMGenerator(r),t=p.fromScene(s,.02).texture;p.dispose();return t}
+function ribbon(pts,w){const P=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(p[0],p[1],0))).getPoints(70),L=[],Q=[];
+ P.forEach((p,i)=>{const a=P[Math.max(0,i-1)],b=P[Math.min(P.length-1,i+1)],dx=b.x-a.x,dy=b.y-a.y,l=Math.hypot(dx,dy)||1,ww=w*(.72+.28*Math.sin(Math.PI*i/(P.length-1)));L.push([p.x-dy/l*ww,p.y+dx/l*ww]);Q.push([p.x+dy/l*ww,p.y-dx/l*ww])});
+ const s=new THREE.Shape();s.moveTo(...L[0]);L.forEach(p=>s.lineTo(...p));Q.reverse().forEach(p=>s.lineTo(...p));return s}
+try{gsap.registerPlugin(ScrollTrigger)}catch(e){}
+/* ===== main scene ===== */
+let R;try{R=new THREE.WebGLRenderer({canvas:$('#bg'),antialias:!mob})}catch(e){}
+const S=new THREE.Scene();S.background=new THREE.Color(0x070707);S.fog=new THREE.FogExp2(0x070707,.017);
+const C=new THREE.PerspectiveCamera(60,1,.1,220);if(R)S.environment=mkEnv(R);
+const goldM=new THREE.MeshStandardMaterial({color:0xDDBE7C,metalness:1,roughness:.22,envMapIntensity:1.7,emissive:0x1a1103});
+S.add(new THREE.AmbientLight(0x554433,.8));
+const key=new THREE.PointLight(LG,2.2,90);key.position.set(0,6,-52);S.add(key);
+const cl=new THREE.PointLight(LG,1.1,40);S.add(cl);
+const mono=new THREE.Group(),MG=[];
+/* Stand-in S+F monogram built from extruded calligraphic strokes. To use the official artwork exactly, replace these stroke paths with its outline. */
+{const o={depth:.9,bevelEnabled:true,bevelThickness:.2,bevelSize:.14,bevelSegments:6,curveSegments:24};
+ [[[[1.7,2.5],[.8,3.1],[-.5,3.1],[-1.4,2.3],[-1,1.2],[0,.35],[1,-.45],[1.5,-1.5],[.8,-2.5],[-.4,-3.05],[-1.6,-2.4]],.4],[[[2.8,3.1],[2.8,.5],[2.8,-3.1]],.34],[[[2.8,3.05],[3.9,3.35],[5.2,2.9]],.3],[[[2.8,.3],[3.8,.6],[4.7,.35]],.26]].forEach(([p,w])=>{const g=new THREE.ExtrudeGeometry(ribbon(p,w),o);g.translate(-1.8,0,-.45);MG.push(g);mono.add(new THREE.Mesh(g,goldM))})}
+mono.position.set(0,1.5,-60);mono.scale.setScalar(0);S.add(mono);
+const fcv=document.createElement('canvas');fcv.width=fcv.height=128;{const x=fcv.getContext('2d'),g=x.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'#fff');g.addColorStop(.2,'#F2D99Baa');g.addColorStop(1,'#D6B36A00');x.fillStyle=g;x.fillRect(0,0,128,128)}
+const flare=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(fcv),blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,opacity:0}));flare.scale.setScalar(14);flare.position.set(0,2.5,-58);S.add(flare);
+const halo=new THREE.Mesh(new THREE.TorusGeometry(7,.06,8,96),new THREE.MeshBasicMaterial({color:LG}));halo.position.copy(mono.position);S.add(halo);
+const rings=[];
+for(let i=0;i<14;i++){const r=new THREE.Mesh(new THREE.TorusGeometry(7+(i%3),.09,12,72),goldM);r.position.set(0,1.5,14-i*5.6);r.rotation.z=i;rings.push(r);S.add(r)}
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(120,160),new THREE.MeshStandardMaterial({color:0x060606,metalness:.9,roughness:.12}));floor.rotation.x=-Math.PI/2;floor.position.set(0,-4,-40);S.add(floor);
+const chG=new THREE.SphereGeometry(.16,8,8),chM=new THREE.MeshBasicMaterial({color:LG});
+for(let i=0;i<6;i++){const g=new THREE.Group();for(let k=0;k<(mob?12:30);k++){const s=new THREE.Mesh(chG,chM);const a=k*2.4,h=k/30;s.position.set(Math.cos(a)*h*2.2,-h*2.6,Math.sin(a)*h*2.2);g.add(s)}g.position.set(i%2?-5:5,6,5-i*11);S.add(g)}
+// particles (GPU): they fly in and assemble into the monogram outline
+const N=mob?3500:11000,pg=new THREE.BufferGeometry(),aS=new Float32Array(N*3),aD=new Float32Array(N*3),aR=new Float32Array(N*3),MV=MG.map(g=>g.attributes.position);
+for(let i=0;i<N;i++){const a=MV[(Math.random()*MV.length)|0],j=(Math.random()*a.count)|0;aS.set([a.getX(j)*2+(Math.random()-.5)*.1,a.getY(j)*2+(Math.random()-.5)*.1,a.getZ(j)*2],i*3);
+ const u=Math.random()*6.283,v=Math.acos(2*Math.random()-1),r=14+Math.random()*30;aR.set([r*Math.sin(v)*Math.cos(u),r*Math.sin(v)*Math.sin(u)*.6,r*Math.cos(v)],i*3);
+ aD.set([(Math.random()-.5)*44,Math.random()*16-4,14-Math.random()*86],i*3)}
+pg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(N*3),3));
+pg.setAttribute('aS',new THREE.BufferAttribute(aS,3));pg.setAttribute('aD',new THREE.BufferAttribute(aD,3));pg.setAttribute('aR',new THREE.BufferAttribute(aR,3));
+const U={uT:{value:0},uC:{value:0},uM:{value:0},uTime:{value:0},uO:{value:new THREE.Vector3(0,1.5,-60)},uPx:{value:Math.min(devicePixelRatio,2)}};
+const pm=new THREE.ShaderMaterial({uniforms:U,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+vertexShader:`uniform float uT,uC,uTime,uPx;uniform vec3 uO;attribute vec3 aS,aD,aR;varying float vT;void main(){float e=smoothstep(0.,1.,clamp(uT*1.45-fract(aD.x*13.)*.45,0.,1.));vec3 p=mix(uO+aR,uO+aS,e);p=mix(p,aD+vec3(sin(uTime+aD.y),cos(uTime*.7+aD.x),0.)*.2,smoothstep(0.,1.,uC));vT=.65+.35*sin(uTime*3.+aD.y*9.);vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=uPx*(1.4+fract(aD.x*7.)*1.8)*(30./-mv.z);gl_Position=projectionMatrix*mv;}`,
+fragmentShader:`uniform float uM,uC;varying float vT;void main(){float d=length(gl_PointCoord-.5);if(d>.5)discard;gl_FragColor=vec4(.95,.78,.42,(1.-d*2.)*.9*vT*(1.-.72*uM*(1.-uC)));}`});
+const pts=new THREE.Points(pg,pm);pts.frustumCulled=false;S.add(pts);
+function rs(){if(!R)return;R.setPixelRatio(Math.min(devicePixelRatio,mob?1.5:2));R.setSize(innerWidth,innerHeight,false);C.aspect=innerWidth/innerHeight;C.updateProjectionMatrix()}
+addEventListener('resize',rs);rs();
+let mode='intro',mx=0,my=0,sx=0,sy=0;
+addEventListener('pointermove',e=>{mx=e.clientX/innerWidth*2-1;my=e.clientY/innerHeight*2-1});
+/* ===== shared venue engine (Simulator + Dream Builder) ===== */
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const PAL={'Blush Rose':[0xf2a1b5,0xffd9e1,0x6f9460],'Ivory White':[0xfaf6ee,0xe6dac0,0x6f8f5c],'Royal Marigold':[0xff9f1a,0xffd04a,0x6d8a3a],'Orchid Purple':[0xa56bd6,0xe3c4f7,0x5f8450]};
+const LT={'Royal Gold':{bg:0x0a0804,a:[0xD6B36A,2.2],b:[0xffe2a0,1.4],sp:0xffd9a0,am:0x4a3a20,ch:0xffd27a,led:['#3a2606','#D6B36A']},
+'Romantic Evening':{bg:0x120610,a:[0xff7aa8,1.8],b:[0xffb08a,1.1],sp:0xff9ec0,am:0x402030,ch:0xffa0b0,led:['#2a0a1e','#ff7aa8']},
+'Grand Celebration':{bg:0x050816,a:[0x5aa0ff,1.8],b:[0xff4fd0,1.5],sp:0xaad0ff,am:0x203050,ch:0xaad0ff,led:['#0a1040','#ff4fd0']},
+'Ivory Garden':{bg:0x0c0b09,a:[0xfff1d6,1.6],b:[0xf7f4ed,1.2],sp:0xffffff,am:0x5a5244,ch:0xfff1d6,led:['#2b2518','#f7f4ed']}};
+function orbit(c,o){const s={th:o.th,ph:o.ph,rd:o.rd,drag:0,kb:0},P=new Map(),z=v=>clamp(v,o.min,o.max);
+ c.addEventListener('pointerdown',e=>{P.set(e.pointerId,[e.clientX,e.clientY]);try{c.setPointerCapture(e.pointerId)}catch(_){}s.drag=1});
+ c.addEventListener('pointermove',e=>{const p=P.get(e.pointerId);if(!p)return;
+  if(P.size==2){const [a,b]=[...P.values()],od=Math.hypot(a[0]-b[0],a[1]-b[1]);P.set(e.pointerId,[e.clientX,e.clientY]);const [a2,b2]=[...P.values()],nd=Math.hypot(a2[0]-b2[0],a2[1]-b2[1]);if(nd>0)s.rd=z(s.rd*od/nd);return}
+  s.th-=(e.clientX-p[0])*.006;s.ph=clamp(s.ph+(e.clientY-p[1])*.005,.1,1.35);P.set(e.pointerId,[e.clientX,e.clientY])});
+ ['pointerup','pointercancel'].forEach(v=>c.addEventListener(v,e=>{P.delete(e.pointerId);s.drag=P.size?1:0}));
+ c.addEventListener('wheel',e=>{if((s.rd<=o.min&&e.deltaY<0)||(s.rd>=o.max&&e.deltaY>0))return;e.preventDefault();s.rd=z(s.rd+e.deltaY*.02)},{passive:false});
+ c.addEventListener('keydown',e=>{const k=e.key,m={ArrowLeft:()=>s.th-=.12,ArrowRight:()=>s.th+=.12,ArrowUp:()=>s.ph=clamp(s.ph-.08,.1,1.35),ArrowDown:()=>s.ph=clamp(s.ph+.08,.1,1.35),'+':()=>s.rd=z(s.rd-2),'=':()=>s.rd=z(s.rd-2),'-':()=>s.rd=z(s.rd+2),'0':()=>s.reset()}[k];if(m){e.preventDefault();s.kb=1;m()}});
+ s.zoom=d=>s.rd=z(s.rd+d);s.reset=()=>{s.th=o.th;s.ph=o.ph;s.rd=o.rd};return s}
+function lazy(el,fn){const io=new IntersectionObserver(e=>{if(e[0].isIntersecting){io.disconnect();fn()}},{rootMargin:'400px'});io.observe(el)}
+function fit(r,c,cm){const w=c.clientWidth||300,h=c.clientHeight||300;r.setPixelRatio(Math.min(devicePixelRatio,mob?1.5:2));r.setSize(w,h,false);cm.aspect=w/h;cm.updateProjectionMatrix()}
+function mkVenue(r,sc){sc.environment=mkEnv(r);
+ const A=new THREE.AmbientLight(0x4a3a20,.9),la=new THREE.PointLight(GOLD,2,70),lb=new THREE.PointLight(GOLD,1,70),sp1=new THREE.SpotLight(0xffffff,2.5,40,.55,.6),sp2=sp1.clone();
+ la.position.set(-8,8,2);lb.position.set(8,6,-8);sp1.position.set(-6,10,2);sp2.position.set(6,10,2);[sp1,sp2].forEach(s=>{s.target.position.set(0,1,-10);sc.add(s,s.target)});sc.add(A,la,lb);
+ const M=(c,m=.2,ro=.5)=>new THREE.MeshStandardMaterial({color:c,metalness:m,roughness:ro}),gold=new THREE.MeshStandardMaterial({color:0xDDBE7C,metalness:1,roughness:.24,envMapIntensity:1.5}),
+  ivory=M(0xf3ede0,.05,.6),fab=new THREE.MeshStandardMaterial({color:0xf7f2e8,roughness:.85,side:2}),glow=new THREE.MeshBasicMaterial({color:0xffe0a0}),fm=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.65}),lf=new THREE.MeshStandardMaterial({color:0x6f8f5c,roughness:.8}),
+  add=(g,m,x,y,z,p=sc)=>{const o=new THREE.Mesh(g,m);o.position.set(x,y,z);p.add(o);return o};
+ add(new THREE.CircleGeometry(18,64),M(0x0b0b0b,.9,.14),0,0,0).rotation.x=-Math.PI/2;
+ add(new THREE.PlaneGeometry(2,16),M(0x5a0f1a,0,.9),0,.02,2).rotation.x=-Math.PI/2;
+ add(new THREE.BoxGeometry(11,.7,4),M(0x1a1a1a,.6,.3),0,.35,-10);add(new THREE.BoxGeometry(4,.24,.6),M(0x1a1a1a,.6,.3),0,.12,-7.7);add(new THREE.BoxGeometry(4,.48,.6),M(0x1a1a1a,.6,.3),0,.24,-8.2);
+ const lc=document.createElement('canvas');lc.width=512;lc.height=64;const lt=new THREE.CanvasTexture(lc);add(new THREE.PlaneGeometry(6,.55),new THREE.MeshBasicMaterial({map:lt}),0,.4,-7.98);
+ const bm=new THREE.MeshBasicMaterial({color:0xffe0a0,transparent:true,opacity:.07,blending:THREE.AdditiveBlending,depthWrite:false,side:2}),beams=[];
+ [-9,-3,3,9].forEach((x,i)=>{const g=new THREE.Group(),c=add(new THREE.ConeGeometry(1.6,12,24,1,true),bm,0,-6,0,g);g.position.set(x,12,-4);g.userData.b=i;sc.add(g);beams.push(g)});
+ const SN=300,sg=new THREE.BufferGeometry(),sa=new Float32Array(SN*3);for(let i=0;i<SN;i++)sa.set([(Math.random()-.5)*32,Math.random()*10,Math.random()*22-14],i*3);sg.setAttribute('position',new THREE.BufferAttribute(sa,3));
+ const sm=new THREE.PointsMaterial({color:0xffe0a0,size:.1,transparent:true,opacity:.8,depthWrite:false,blending:THREE.AdditiveBlending}),sparks=new THREE.Points(sg,sm);sc.add(sparks);
+ let F=null,lt0=LT['Royal Gold'],haze=true;
+ function build(c){if(F){sc.remove(F);F.traverse(o=>o.geometry&&o.geometry.dispose())}F=new THREE.Group();sc.add(F);
+  const [p1,p2,pg]=PAL[c.pal],fx=[],lv=[],cr=[],bu=[];let sd=11;const R=()=>(sd=sd*16807%2147483647)/2147483647,D=new THREE.Object3D();
+  const bloom=(x,y,z,rad,n,sy=1)=>{n=Math.round(n*c.dens);for(let i=0;i<n;i++){const u=R()*6.283,v=Math.acos(2*R()-1),q=Math.cbrt(R())*rad;fx.push([x+q*Math.sin(v)*Math.cos(u),y+q*Math.cos(v)*sy,z+q*Math.sin(v)*Math.sin(u),.09+R()*.11,R()<.55?p1:p2]);if(i%3==0)lv.push([x+(R()-.5)*rad*2.2,y+(R()-.5)*rad*1.4,z+(R()-.5)*rad*2.2,.17+R()*.1])}};
+  const col=(x,z,h)=>{add(new THREE.CylinderGeometry(.3,.34,h,24),gold,x,.7+h/2,z,F);add(new THREE.CylinderGeometry(.55,.32,.4,24),gold,x,.7+h,z,F);add(new THREE.CylinderGeometry(.5,.5,.3,24),gold,x,.85,z,F)};
+  const st=c.stage;
+  if(st=='Royal Arch'){[4.2,3.6].forEach((r,i)=>add(new THREE.TorusGeometry(r,i?.07:.16,16,80,Math.PI),gold,0,.7,-11,F));add(new THREE.PlaneGeometry(8.6,5.6),fab,0,3.4,-11.8,F);add(new THREE.CircleGeometry(3.3,48),new THREE.MeshBasicMaterial({color:p1,transparent:true,opacity:.28}),0,3.8,-11.6,F);[-5.3,5.3].forEach(x=>col(x,-11,5));
+   for(let k=0;k<=14;k++){const a=Math.PI*k/14;bloom(Math.cos(a)*4.2,.7+Math.sin(a)*4.2,-10.9,.6,9)}bloom(-4.8,1.5,-10.4,1.3,60);bloom(4.8,1.5,-10.4,1.3,60)}
+  else if(st=='Floral Wall'){add(new THREE.PlaneGeometry(10.4,6.8),M(0x0e0e0e,.3,.8),0,4.1,-11.9,F);for(let gx=-4.8;gx<=4.8;gx+=.4)for(let gy=.9;gy<=6.5;gy+=.4)if(R()<.55+c.dens*.3)fx.push([gx+(R()-.5)*.2,gy,-11.5+R()*.2,.16+R()*.1,R()<.5?p1:p2]);
+   add(new THREE.TorusGeometry(2.3,.12,16,64),gold,0,4,-11.2,F);add(new THREE.TorusGeometry(1.7,.05,12,64),gold,0,4,-11.15,F);bloom(-5.3,1.3,-10.5,1.2,50);bloom(5.3,1.3,-10.5,1.2,50)}
+  else if(st=='Grand Pillars'){const xs=[-6,-2.2,2.2,6];xs.forEach(x=>col(x,-11,6.4));add(new THREE.PlaneGeometry(8.8,6),fab,0,3.7,-11.9,F);
+   for(let i=0;i<3;i++){const x0=xs[i],x1=xs[i+1],cv=new THREE.CatmullRomCurve3([new THREE.Vector3(x0,7,-11),new THREE.Vector3((x0+x1)/2,6.1,-10.6),new THREE.Vector3(x1,7,-11)]);add(new THREE.TubeGeometry(cv,24,.2,8),fab,0,0,0,F);for(let k=0;k<=4;k++){const p=cv.getPoint(k/4);bloom(p.x,p.y,p.z+.2,.45,8)}}
+   xs.forEach(x=>bloom(x,1.4,-10.4,.9,28));add(new THREE.BoxGeometry(13.6,.35,.6),gold,0,7.15,-11,F)}
+  else{[[-2.9,-11.8],[2.9,-11.8],[-2.9,-8.4],[2.9,-8.4]].forEach(([x,z])=>col(x,z,4.4));
+   [[0,-11.8,6,.2,.2],[0,-8.4,6,.2,.2],[-2.9,-10.1,.2,.2,3.4],[2.9,-10.1,.2,.2,3.4]].forEach(([x,z,w,h,d])=>add(new THREE.BoxGeometry(w,h,d),gold,x,5.2,z,F));
+   const rf=add(new THREE.ConeGeometry(4.6,1.6,4),fab,0,6,-10.1,F);rf.rotation.y=Math.PI/4;add(new THREE.SphereGeometry(.28,16,16),gold,0,6.95,-10.1,F);
+   [[-2.9,-11.8],[2.9,-11.8],[-2.9,-8.4],[2.9,-8.4]].forEach(([x,z])=>{for(let k=0;k<7;k++)bloom(x,4.9-k*.55,z,.32,5)});for(let k=-2;k<=2;k++){bloom(k*1.2,5.0,-8.4,.4,6);bloom(k*1.2,5.0,-11.8,.4,6)}add(new THREE.PlaneGeometry(6,4.2),fab,0,2.8,-12,F)}
+  const sf=add(new THREE.BoxGeometry(2.6,.5,1),ivory,0,.95,-10,F);add(new THREE.BoxGeometry(2.6,1.1,.28),ivory,0,1.5,-10.45,F);[-1.4,1.4].forEach(x=>add(new THREE.BoxGeometry(.28,.8,1),ivory,x,1.1,-10,F));[-1.1,1.1].forEach(x=>add(new THREE.BoxGeometry(.1,.3,.1),gold,x,.75,-9.6,F));
+  [-7.8,7.8].forEach(x=>{add(new THREE.CylinderGeometry(.08,.2,2.2,12),gold,x,1.8,-7.2,F);bloom(x,3.2,-7.2,.95,40)});
+  for(let z=3;z>=-5;z-=2.6)[-1.6,1.6].forEach(x=>{add(new THREE.CylinderGeometry(.05,.14,1.1,10),gold,x,.55,z,F);bloom(x,1.35,z,.4,12)});
+  const xs=[[0],[0,-7],[0,-7,7],[-3.5,3.5,-9.5,9.5].slice(0,4),[0,-6,6,-11,11]][0];
+  const CX=[[],[0],[-5,5],[-6,0,6],[-8,-3,3,8],[-9,-4.5,0,4.5,9]][c.chand];CX.forEach(x=>{const y=8.4,z=-2;add(new THREE.CylinderGeometry(.03,.03,13-y,6),gold,x,(13+y)/2,z,F);[[0,1.5],[1,1],[2,.55]].forEach(([i,rr])=>{add(new THREE.TorusGeometry(rr,.05,8,40),gold,x,y-i*.55,z,F).rotation.x=Math.PI/2;const n=Math.round(rr*14);for(let k=0;k<n;k++){const a=k/n*6.283;cr.push([x+Math.cos(a)*rr,y-i*.55-.14,z+Math.sin(a)*rr]);if(k%3==0)bu.push([x+Math.cos(a)*rr,y-i*.55+.08,z+Math.sin(a)*rr])}});add(new THREE.SphereGeometry(.16,12,12),glow,x,y-1.2,z,F)});
+  const T=c.tables,tp=[];for(let i=0;i<T;i++)tp.push([[-8,-3.6,3.6,8][i%4],-3+Math.floor(i/4)*4.8]);
+  const tb=new THREE.InstancedMesh(new THREE.CylinderGeometry(1.15,1.15,.9,24),ivory,T),se=new THREE.InstancedMesh(new THREE.BoxGeometry(.5,.12,.5),ivory,T*8),bk=new THREE.InstancedMesh(new THREE.BoxGeometry(.5,.62,.08),fab,T*8),lg=new THREE.InstancedMesh(new THREE.CylinderGeometry(.05,.05,.5,6),gold,T*8);let ci=0;
+  tp.forEach(([x,z],i)=>{D.rotation.set(0,0,0);D.scale.setScalar(1);D.position.set(x,.45,z);D.updateMatrix();tb.setMatrixAt(i,D.matrix);bloom(x,1.25,z,.3,9);bu.push([x,1.05,z]);
+   for(let k=0;k<8;k++){const a=k*.7854,px=x+Math.cos(a)*1.75,pz=z+Math.sin(a)*1.75;D.rotation.set(0,-a+Math.PI/2,0);D.position.set(px,.56,pz);D.updateMatrix();se.setMatrixAt(ci,D.matrix);D.position.set(px+Math.cos(a)*.22,.9,pz+Math.sin(a)*.22);D.updateMatrix();bk.setMatrixAt(ci,D.matrix);D.rotation.set(0,0,0);D.position.set(px,.25,pz);D.updateMatrix();lg.setMatrixAt(ci,D.matrix);ci++}});F.add(tb,se,bk,lg);
+  const inst=(g,m,a,fn)=>{const im=new THREE.InstancedMesh(g,m,Math.max(1,a.length));a.forEach((p,i)=>{D.rotation.set(0,0,0);D.scale.setScalar(1);D.position.set(p[0],p[1],p[2]);fn(D,p,i);D.updateMatrix();im.setMatrixAt(i,D.matrix);if(m===fm)im.setColorAt(i,new THREE.Color(p[4]))});F.add(im)};
+  inst(new THREE.IcosahedronGeometry(1,1),fm,fx,(d,p)=>d.scale.setScalar(p[3]));inst(new THREE.SphereGeometry(1,8,6),lf,lv,(d,p,i)=>{d.scale.set(p[3],p[3]*.35,p[3]*.6);d.rotation.set(i,i*1.7,i*.6)});
+  inst(new THREE.OctahedronGeometry(.07),new THREE.MeshStandardMaterial({color:0xfff4d8,metalness:.2,roughness:.05,emissive:0x665533}),cr,d=>d.scale.set(1,2.6,1));inst(new THREE.SphereGeometry(.07,8,8),glow,bu,()=>{})}
+ function light(n){const p=lt0=LT[n];sc.background=new THREE.Color(p.bg);sc.fog=new THREE.FogExp2(p.bg,haze?.03:.012);A.color.setHex(p.am);la.color.setHex(p.a[0]);la.intensity=p.a[1];lb.color.setHex(p.b[0]);lb.intensity=p.b[1];sp1.color.setHex(p.sp);sp2.color.setHex(p.sp);bm.color.setHex(p.sp);sm.color.setHex(p.sp);
+  const x=lc.getContext('2d'),g=x.createLinearGradient(0,0,512,0);g.addColorStop(0,p.led[0]);g.addColorStop(.5,p.led[1]);g.addColorStop(1,p.led[0]);x.fillStyle=g;x.fillRect(0,0,512,64);x.fillStyle='#fff';x.font='600 34px Georgia';x.textAlign='center';x.fillText('SF EVENTS',256,44);lt.needsUpdate=true}
+ function fxs(h,s){haze=h;sc.fog.density=h?.03:.012;bm.opacity=h?.09:.03;sparks.visible=s}
+ function tick(t){const f=RM?0:1;beams.forEach(g=>{const i=g.userData.b;g.rotation.z=Math.sin(t*.7+i*1.3)*.3*f+(i<2?.15:-.15);g.rotation.x=Math.cos(t*.5+i)*.18*f});sp1.intensity=2.5+Math.sin(t*1.2)*.5*f;sp2.intensity=2.5+Math.cos(t*1.1)*.5*f;
+  if(sparks.visible&&f){const a=sg.attributes.position;for(let i=0;i<SN;i++){let y=a.getY(i)+.004+Math.sin(t+i)*.0008;if(y>10)y=0;a.setY(i,y)}a.needsUpdate=true}}
+ return{build,light,fx:fxs,tick}}
+/* --- Dream Venue Simulator --- */
+const vc=$('#vc'),vo=orbit(vc,{th:.4,ph:.42,rd:22,min:9,max:34});let VR,VS,VC,V,vis=false,curP=0;
+const SIM=[['Royal Gold','Royal Arch','Ivory White'],['Romantic Evening','Floral Wall','Blush Rose'],['Grand Celebration','Grand Pillars','Orchid Purple'],['Ivory Garden','Mandap','Royal Marigold']];
+function preset(i){curP=i;document.querySelectorAll('#pre .chip').forEach((b,k)=>b.setAttribute('aria-pressed',k==i));if(!V)return;const [l,s,p]=SIM[i];V.build({stage:s,pal:p,dens:mob?.7:1,chand:mob?2:3,tables:mob?4:8});V.light(l);V.fx(true,!RM)}
+SIM.forEach((p,i)=>{const b=document.createElement('button');b.className='chip';b.textContent=p[0].toUpperCase();b.onclick=()=>preset(i);$('#pre').append(b)});preset(0);
+lazy($('#vwrap'),()=>{try{VR=new THREE.WebGLRenderer({canvas:vc,antialias:!mob})}catch(e){return}VS=new THREE.Scene();VC=new THREE.PerspectiveCamera(50,1,.1,100);V=mkVenue(VR,VS);preset(curP);fit(VR,vc,VC);addEventListener('resize',()=>fit(VR,vc,VC));new IntersectionObserver(e=>{vis=e[0].isIntersecting;if(vis)fit(VR,vc,VC)}).observe($('#vwrap'))});
+$('#zi').onclick=()=>vo.zoom(-3);$('#zo').onclick=()=>vo.zoom(3);$('#rs').onclick=()=>vo.reset();
+/* --- SF DREAM BUILDER --- */
+const bc=$('#bc'),bo=orbit(bc,{th:.12,ph:.3,rd:17,min:8,max:30}),BC={stage:'Royal Arch',pal:'Blush Rose',lt:'Royal Gold',dens:1,chand:3,haze:true,spark:true};let BR,BS,BCm,B,bvis=false;
+function bUp(){const d=`${BC.stage} stage · ${BC.pal} florals · ${BC.lt} lighting · ${BC.chand} chandeliers · ${BC.haze?'haze':'clear air'}${BC.spark?' · sparkles':''}`;DREAM=d;$('#bst').textContent='Your design: '+d;
+ $('#bwa').href='https://wa.me/918978679524?text='+encodeURIComponent('Hello SF EVENTS! Here is my SF Dream Builder design:\n\n• '+d+'\n\nPlease get in touch. Thank you!');
+ if(B){B.build({...BC,tables:mob?2:4});B.light(BC.lt);B.fx(BC.haze,BC.spark&&!RM)}}
+function grp(lbl,key,opts){const w=document.createElement('div');w.innerHTML=`<span class="lb">${lbl}</span>`;const c=document.createElement('div');c.className='chips';c.setAttribute('role','group');c.setAttribute('aria-label',lbl);
+ opts.forEach(o=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=(o.t||o).toUpperCase();const v=o.v!==undefined?o.v:o;b.setAttribute('aria-pressed',typeof v=='boolean'?BC[key]==v:BC[key]==v);
+  b.onclick=()=>{if(key=='haze'||key=='spark'){BC[key]=!BC[key];b.setAttribute('aria-pressed',BC[key])}else{BC[key]=v;c.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x==b))}bUp()};c.append(b)});w.append(c);$('#bctl').append(w)}
+grp('Stage design','stage',['Royal Arch','Floral Wall','Grand Pillars','Mandap']);grp('Floral decoration','pal',Object.keys(PAL));grp('Lighting','lt',Object.keys(LT));
+{const w=document.createElement('div');w.innerHTML='<label for="bd">Floral density</label><input type="range" id="bd" min="0.4" max="1.8" step="0.1" value="1"><label for="bch" style="margin-top:14px">Chandeliers: <span id="bcv">3</span></label><input type="range" id="bch" min="0" max="5" step="1" value="3">';$('#bctl').append(w);
+ $('#bd').oninput=e=>{BC.dens=+e.target.value;bUp()};$('#bch').oninput=e=>{BC.chand=+e.target.value;$('#bcv').textContent=e.target.value;bUp()}}
+grp('Atmosphere','haze',[{t:'Haze',v:true}]);grp('Atmosphere','spark',[{t:'Sparkles',v:true}]);
+bUp();
+lazy($('#bwrap'),()=>{try{BR=new THREE.WebGLRenderer({canvas:bc,antialias:!mob})}catch(e){return}BS=new THREE.Scene();BCm=new THREE.PerspectiveCamera(50,1,.1,100);B=mkVenue(BR,BS);bUp();fit(BR,bc,BCm);addEventListener('resize',()=>fit(BR,bc,BCm));new IntersectionObserver(e=>{bvis=e[0].isIntersecting;if(bvis)fit(BR,bc,BCm)}).observe($('#bwrap'))});
+$('#bzi').onclick=()=>bo.zoom(-3);$('#bzo').onclick=()=>bo.zoom(3);$('#brs').onclick=()=>bo.reset();
+$('#buse').onclick=()=>{bUp()};
+/* ===== loop + cinematic camera ===== */
+const clk=new THREE.Clock(),cam={x:0,y:1.5,z:-42,ah:20,fov:60,roll:0},dr={v:0};
+const orb=(C_,s,ty,tz)=>{const{th,ph,rd}=s;C_.position.set(Math.sin(th)*Math.cos(ph)*rd,Math.sin(ph)*rd+1,Math.cos(th)*Math.cos(ph)*rd);C_.lookAt(0,ty,tz)};
+function loop(){requestAnimationFrame(loop);if(document.hidden)return;const t=clk.getElapsedTime();U.uTime.value=t;
+ if(R){const f=RM?0:1;sx+=(mx-sx)*.05;sy+=(my-sy)*.05;C.position.set(cam.x+sx*1.4*f,cam.y-sy*.9*f,cam.z+dr.v);C.lookAt(0,1.5,cam.z+dr.v-cam.ah);if(cam.roll)C.rotateZ(cam.roll);
+  if(Math.abs(C.fov-cam.fov)>.01){C.fov=cam.fov;C.updateProjectionMatrix()}cl.position.copy(C.position);
+  if(f){key.position.x=Math.sin(t*.7)*14;flare.position.x=Math.sin(t*.7)*5;flare.material.opacity=Math.pow(Math.max(0,Math.sin(t*.7+1.2)),6)*.7*U.uM.value*(mode=='intro'?1:.35)}
+  rings.forEach((r,i)=>{r.rotation.z=RM?r.rotation.z:t*.15*(i%2?1:-1)+i});mono.rotation.y=RM?0:Math.sin(t*.5)*.35;halo.rotation.z=t*.1;R.render(S,C)}
+ if(V&&vis){if(!vo.drag&&!vo.kb&&!RM)vo.th+=.0016;orb(VC,vo,2,-3);V.tick(t);VR.render(VS,VC)}
+ if(B&&bvis){orb(BCm,bo,3,-9);B.tick(t);BR.render(BS,BCm)}}
+loop();
+/* ===== intro ===== */
+const intro=$('#intro');
+function reveal(){gsap.to(mono.scale,{x:2,y:2,z:2,duration:RM?0:2.4,ease:'expo.out'});gsap.to(U.uM,{value:1,duration:RM?0:2.4});gsap.to('#intro h1',{opacity:1,duration:1.4});gsap.to('#intro p',{opacity:1,duration:1.4,delay:.4});gsap.to('#intro .btn',{opacity:1,duration:1,delay:.9})}
+if(RM){U.uT.value=1;U.uM.value=1;mono.scale.setScalar(2);gsap.set('#intro h1,#intro p,#intro .btn',{opacity:1})}
+else{gsap.to(U.uT,{value:1,duration:4.8,ease:'power2.inOut'});gsap.delayedCall(4.2,reveal)}
+function enter(){if(mode!='intro')return;mode='site';mono.scale.setScalar(2);U.uT.value=1;U.uM.value=1;go('hero');gsap.to(U.uC,{value:1,duration:RM?.1:3.5,ease:'power2.inOut'});
+ gsap.to(intro,{opacity:0,duration:1.2,onComplete:()=>intro.remove()});$('#skip').remove();document.body.classList.remove('lock');$('#main').focus({preventScroll:true});
+ gsap.from('#hero>*',{y:40,opacity:0,stagger:.18,duration:1.3,delay:1.2,ease:'power3.out'})}
+$('#enter').onclick=enter;$('#skip').onclick=enter;
+/* ===== nav ===== */
+$('#mb').onclick=()=>{const o=$('#nl').classList.toggle('on');$('#mb').setAttribute('aria-expanded',o)};
+document.querySelectorAll('#nl a').forEach(a=>a.onclick=()=>{$('#nl').classList.remove('on');$('#mb').setAttribute('aria-expanded',false)});addEventListener('keydown',e=>{if(e.key=='Escape'&&$('#nl').classList.contains('on')){$('#nl').classList.remove('on');$('#mb').setAttribute('aria-expanded',false);$('#mb').focus()}});
+if(!RM&&!matchMedia('(hover:none)').matches){const qx=gsap.quickTo('#cur','x',{duration:.3}),qy=gsap.quickTo('#cur','y',{duration:.3});addEventListener('pointermove',e=>{qx(e.clientX);qy(e.clientY)})}else $('#cur').remove();
+try{if(!RM)gsap.utils.toArray('.rv').forEach(el=>gsap.to(el,{opacity:1,y:0,duration:1,scrollTrigger:{trigger:el,start:'top 88%'}}))}catch(e){document.querySelectorAll('.rv').forEach(e=>e.style.opacity=1)}
+/* ===== seamless section camera transitions (GSAP ScrollTrigger) ===== */
+const WP={hero:{z:14,x:0,y:1.5,ah:20,fov:60,roll:0},worlds:{z:3,x:-1.6,y:2.4,ah:22,fov:54,roll:.03},venue:{z:-8,x:2,y:.9,ah:18,fov:68,roll:-.03},builder:{z:-17,x:-2,y:3,ah:20,fov:56,roll:.02},portfolio:{z:-26,x:1.4,y:1.2,ah:20,fov:64,roll:0},plan:{z:-34,x:-1,y:2,ah:18,fov:58,roll:-.02},gallery:{z:-41,x:1.2,y:1.6,ah:20,fov:62,roll:.02},contact:{z:-47,x:0,y:1.5,ah:13,fov:52,roll:0}};
+function go(id){if(mode=='intro')return;const w=WP[id];if(!w)return;gsap.to(cam,{...w,duration:RM?0:2.2,ease:'power3.inOut',overwrite:true});if(!RM)gsap.fromTo('#fl',{opacity:.25},{opacity:0,duration:1.5,ease:'power2.out'})}
+try{Object.keys(WP).forEach(id=>ScrollTrigger.create({trigger:'#'+id,start:'top 55%',end:'bottom 55%',onEnter:()=>go(id),onEnterBack:()=>go(id)}));
+ if(!RM)gsap.to(dr,{v:-3,ease:'none',scrollTrigger:{trigger:'main',start:'top top',end:'bottom bottom',scrub:1.2}});addEventListener('load',()=>ScrollTrigger.refresh())}catch(e){}
+/* ===== worlds ===== */
+const W=[['Weddings','The Royal Palace','A floating wedding palace of golden light, floral installations, a grand entrance and a magnificent stage built around your story.',0xD6B36A],
+['Decor','The Design Studio','Flowers, fabrics, chandeliers, lighting and stage structures composed into a single, considered environment.',0xF2D99B],
+['Cinematography','The Camera Universe','Cinematic coverage: photography, films and reels shot with rigs, lenses and light that make memories feel like cinema.',0xffc477],
+['Celebrations','The Private Atmosphere','Immersive lighting, dynamic decoration and atmosphere for birthdays, engagements and intimate celebrations.',0xff9ec0],
+['Corporate','The Event Arena','Launches and gatherings with LED walls, stage architecture and synchronised lighting.',0x7fb4ff],
+['Catering & Production','The Hospitality World','Dining arrangements, food presentation, professional production and the infrastructure that keeps an event flowing.',0xffe9b0]];
+let sel=0;const ring=$('#ring');
+W.forEach((w,i)=>{const b=document.createElement('button');b.className='pt';b.style.transform=`rotateY(${i*60}deg) translateZ(var(--rz))`;b.innerHTML=`<b>0${i+1}</b><span>${w[0]}</span>`;b.onclick=()=>pick(i);b.setAttribute('aria-pressed',i==0);ring.append(b)});
+function pick(i){sel=(i+6)%6;const cur=gsap.getProperty(ring,'rotationY')||0;let d=((-sel*60-cur)%360+540)%360-180;gsap.to(ring,{rotationY:cur+d,duration:RM?0:1.4,ease:'power3.inOut'});
+ ring.querySelectorAll('.pt').forEach((b,k)=>b.setAttribute('aria-pressed',k==sel));const w=W[sel];
+ $('#wi').innerHTML=`<div class="eyebrow">World 0${sel+1}</div><h3>${w[0]} — ${w[1]}</h3><p style="margin-top:10px">${w[2]}</p><div style="margin-top:18px"><a class="btn o" href="#plan">Plan this world</a></div>`;
+ const c=new THREE.Color(w[3]);gsap.to(key.color,{r:c.r,g:c.g,b:c.b,duration:1.2});gsap.to(C.rotation,{z:.05,duration:.6,yoyo:true,repeat:1})}
+$('#pv').onclick=()=>pick(sel-1);$('#nx').onclick=()=>pick(sel+1);pick(0);
+/* ===== portfolio ===== */
+const pf=$('#strip');CATS.forEach(c=>{const o=IMG.find(x=>x.cat==c),d=document.createElement('div');d.className='fr';d.tabIndex=0;d.setAttribute('role','button');d.setAttribute('aria-label','Open '+c+' preview');d.innerHTML=`<i role="img" aria-label="${o.title} (inspiration photo)" style="background:${bgOf(o)}"></i>${o.src?'<span class="demo">INSPIRATION</span>':'<span class="demo">IMAGE PREVIEW</span>'}<div class="cap">${c}</div>`;d.onclick=()=>openLb(IMG.indexOf(o));d.onkeydown=e=>{if(e.key=='Enter'||e.key==' '){e.preventDefault();d.click()}else if(e.key=='ArrowRight'||e.key=='ArrowLeft'){const n=d[e.key=='ArrowRight'?'nextElementSibling':'previousElementSibling'];if(n)n.focus()}};pf.append(d)});
+pf.addEventListener('pointermove',e=>{if(RM)return;pf.querySelectorAll('.fr i').forEach(i=>{const r=i.parentNode.getBoundingClientRect();i.style.transform=`translateX(${((e.clientX-r.left)/r.width-.5)*-24}px) scale(1.06)`})});
+/* ===== gallery ===== */
+let flt='All',list=IMG;const gal=$('#gal'),gf=$('#gf');
+['All',...CATS].forEach(c=>{const b=document.createElement('button');b.className='chip';b.setAttribute('aria-pressed',c=='All');b.textContent=c.toUpperCase();b.onclick=()=>{flt=c;gf.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x==b));draw()};gf.append(b)});
+$('#gal').addEventListener('keydown',e=>{const g=$('#gal'),b=[...g.children],i=b.indexOf(document.activeElement);if(i<0)return;const cols=Math.max(1,Math.round(g.clientWidth/b[0].offsetWidth)),m={ArrowRight:1,ArrowLeft:-1,ArrowDown:cols,ArrowUp:-cols,Home:-i,End:b.length-1-i}[e.key];if(!m)return;e.preventDefault();(b[i+m]||document.activeElement).focus()});
+function draw(){list=IMG.filter(o=>flt=='All'||o.cat==flt);gal.innerHTML='';list.forEach((o,i)=>{const b=document.createElement('button');b.className='gp';b.setAttribute('aria-label','Open '+o.title);b.innerHTML=`<i role="img" aria-label="${o.title} (inspiration photo)" style="background:${bgOf(o)}"></i>${o.src?'<span class="demo">INSPIRATION</span>':'<span class="demo">IMAGE PREVIEW</span>'}<div class="cap">${o.title}</div>`;
+ b.onclick=()=>openLb(i,true);if(!RM)b.onpointermove=e=>{const r=b.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;b.style.transform=`rotateY(${x*18}deg) rotateX(${-y*18}deg) translateZ(14px)`};b.onpointerleave=()=>b.style.transform='';
+ b.style.transform=RM?'':`rotateY(${(i%3-1)*5}deg)`;gal.append(b)});
+ if(!RM)gsap.from('.gp',{opacity:0,y:30,stagger:.05,duration:.6})}draw();
+let lbList=IMG,li=0,lbOp=null;const LB=$('#lb');
+function openLb(i,g){lbList=g?list:IMG;li=i;lbOp=document.activeElement;showLb();LB.classList.add('on');document.body.classList.add('lock');$('#lc').focus()}
+function closeLb(){LB.classList.remove('on');if(mode!='intro')document.body.classList.remove('lock');if(lbOp)lbOp.focus()}
+function showLb(){const o=lbList[li];$('#lbi').style.backgroundImage=o.src?`url(${o.src})`:bgOf(o);$('#lbi').setAttribute('role','img');$('#lbi').setAttribute('aria-label',o.title+(o.src?' (inspiration photo)':' (image preview)'));$('#lbt').textContent=`${o.title} · ${li+1}/${lbList.length}`+(o.src?' · inspiration image':' · image preview')}
+const lstep=d=>{li=(li+d+lbList.length)%lbList.length;showLb()};
+$('#lc').onclick=closeLb;$('#lp').onclick=()=>lstep(-1);$('#ln').onclick=()=>lstep(1);
+addEventListener('keydown',e=>{if(!LB.classList.contains('on'))return;const k=e.key;if(k=='Escape')closeLb();else if(k=='ArrowLeft')lstep(-1);else if(k=='ArrowRight')lstep(1);else if(k=='Home'){li=0;showLb()}else if(k=='End'){li=lbList.length-1;showLb()}
+ else if(k=='Tab'){const f=[...LB.querySelectorAll('button')],a=f.indexOf(document.activeElement);if(e.shiftKey&&a<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&a==f.length-1){e.preventDefault();f[0].focus()}}});
+{let sx0=null;$('#lbi').addEventListener('pointerdown',e=>sx0=e.clientX);$('#lbi').addEventListener('pointerup',e=>{if(sx0!==null&&Math.abs(e.clientX-sx0)>50)lstep(e.clientX<sx0?1:-1);sx0=null})}
+LB.addEventListener('click',e=>{if(e.target===LB)closeLb()});
+/* ===== event machine ===== */
+['Royal Gold','Romantic Floral','Modern Minimal','Traditional','Futuristic Lights','Custom Idea'].forEach(v=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=v.toUpperCase();b.setAttribute('aria-pressed',false);b.onclick=()=>{$('#f5').querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x==b))};b.dataset.v=v;$('#f5').append(b)});
+['Photography','Cinematography','Reels','Drone','Pre-event shoot','Not required'].forEach(v=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=v.toUpperCase();b.setAttribute('aria-pressed',false);b.dataset.v=v;b.onclick=()=>b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!='true');$('#f6').append(b)});
+$('#f4').oninput=e=>$('#gv').textContent=e.target.value;
+$('#m').onsubmit=e=>{e.preventDefault();const v=id=>$(id).value||'Not specified',d=($('#f5').querySelector('[aria-pressed=true]')||{dataset:{}}).dataset.v||'Not specified',ph=[...$('#f6').querySelectorAll('[aria-pressed=true]')].map(b=>b.dataset.v).join(', ')||'Not specified';
+ const L=['Event: '+v('#f1'),'Date: '+v('#f2'),'Venue: '+v('#f3'),'Guests: '+$('#f4').value,'Decoration: '+d,'Photography: '+ph,'Catering: '+v('#f7'),'Budget: '+v('#f8')];if(DREAM)L.push('Dream Builder design: '+DREAM);
+ $('#st').textContent=L.join('\n');$('#wa').href='https://wa.me/918978679524?text='+encodeURIComponent('Hello SF EVENTS! I would like to enquire about an event.\n\n'+L.map(x=>'• '+x).join('\n')+'\n\nPlease get in touch. Thank you!');
+ $('#sum').style.display='block';$('#sum').scrollIntoView({behavior:RM?'auto':'smooth',block:'center'})};
+</script></body></html>
